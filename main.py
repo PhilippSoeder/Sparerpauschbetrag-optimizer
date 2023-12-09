@@ -53,7 +53,7 @@ if __name__ == "__main__":
             amount_to_sell += buys[0]["amount"]
             profit += buys[0]["amount"] * profit_share
             target_profit -= buys[0]["amount"] * profit_share
-            total += buys[0]["amount"] * buys[0]["price"]
+            total += buys[0]["amount"] * CURRENT_ETF_PRICE
             previous_profit_share = profit_share
             previous_price_share = buys[0]["price"]
             buys.pop(0)
@@ -63,19 +63,20 @@ if __name__ == "__main__":
                 amount_to_sell += diff_to_next_full_share
                 target_profit -= diff_to_next_full_share * profit_share
                 profit += diff_to_next_full_share * profit_share
-                total += diff_to_next_full_share * buys[0]["price"]
+                total += diff_to_next_full_share * CURRENT_ETF_PRICE
                 amount_to_sell += int(target_profit / profit_share)
                 possible = int(target_profit / profit_share)
                 profit += possible * profit_share
                 target_profit -= possible * profit_share
-                total += possible * buys[0]["price"]
+                total += possible * CURRENT_ETF_PRICE
             break
 
     too_much: float = amount_to_sell - int(amount_to_sell)
     amount_to_sell = int(amount_to_sell)
     profit -= too_much * previous_profit_share
     profit = round(profit, 2)
-    total -= too_much * previous_profit_share
+    total -= too_much * CURRENT_ETF_PRICE
     total = round(total, 2)
 
     print(f"Shares to sell: {amount_to_sell}")
+    print(f"You will receive: {total}€")
