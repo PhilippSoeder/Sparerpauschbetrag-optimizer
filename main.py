@@ -22,9 +22,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     OPEN_SPARERPAUSCHBETRAG: float = args.sparerpauschbetrag
     CURRENT_ETF_PRICE: float = args.current_price
-
     # only 70% of profits on etfs are taxed in Germany
-    target_profit: float = OPEN_SPARERPAUSCHBETRAG / 70 * 100
+    PERCENTAGE_TO_BE_TAXED: float = 0.7
+
+    target_profit: float = 1 / PERCENTAGE_TO_BE_TAXED * OPEN_SPARERPAUSCHBETRAG
 
     buys: list = read_csv("0_buys.csv")
     sells: list = read_csv("0_sells.csv")
@@ -41,7 +42,6 @@ if __name__ == "__main__":
 
     profit: float = 0
     amount_to_sell: float = 0
-    total: float = 0
 
     # Helper variables to reduce amount_to_sell and total to next lower int
     previous_profit_share: float = 0
@@ -53,7 +53,6 @@ if __name__ == "__main__":
             amount_to_sell += buys[0]["amount"]
             profit += buys[0]["amount"] * profit_share
             target_profit -= buys[0]["amount"] * profit_share
-            total += buys[0]["amount"] * CURRENT_ETF_PRICE
             previous_profit_share = profit_share
             previous_price_share = buys[0]["price"]
             buys.pop(0)
@@ -63,20 +62,20 @@ if __name__ == "__main__":
                 amount_to_sell += diff_to_next_full_share
                 target_profit -= diff_to_next_full_share * profit_share
                 profit += diff_to_next_full_share * profit_share
-                total += diff_to_next_full_share * CURRENT_ETF_PRICE
                 amount_to_sell += int(target_profit / profit_share)
                 possible = int(target_profit / profit_share)
                 profit += possible * profit_share
                 target_profit -= possible * profit_share
-                total += possible * CURRENT_ETF_PRICE
             break
 
     too_much: float = amount_to_sell - int(amount_to_sell)
     amount_to_sell = int(amount_to_sell)
     profit -= too_much * previous_profit_share
     profit = round(profit, 2)
-    total -= too_much * CURRENT_ETF_PRICE
-    total = round(total, 2)
+    total: float = round(amount_to_sell * CURRENT_ETF_PRICE, 2)
+    used_SPB = round(profit * PERCENTAGE_TO_BE_TAXED, 2)
 
     print(f"Shares to sell: {amount_to_sell}")
     print(f"You will receive: {total}€")
+    print(f"Profit will be {profit}€")
+    print(f"Used Sparerpauschbetrag will be {used_SPB}€")
