@@ -47,7 +47,7 @@ if __name__ == "__main__":
     previous_profit_share: float = 0
     previous_price_share: float = 0
 
-    while target_profit > profit:
+    while target_profit > profit and len(buys) > 0:
         profit_share: float = CURRENT_ETF_PRICE - buys[0]["price"]
         if profit_share * buys[0]["amount"] <= target_profit:
             amount_to_sell += buys[0]["amount"]
